@@ -1,0 +1,21 @@
+name: lint
+on:
+  pull_request:
+    branches: 
+      - 'develop'
+      - 'master'
+    paths:
+      - '**.js'
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm ci --also=dev
+      - run: git fetch origin $GITHUB_BASE_REF $GITHUB_HEAD_REF
+      - run: npx eslint $(git diff-tree --no-commit-id --name-only -r origin/$GITHUB_HEAD_REF origin/$GITHUB_BASE_REF -- **.js)
